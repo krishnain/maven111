@@ -1,44 +1,74 @@
+@Library('mylibrary')_
 pipeline
 {
     agent any
     stages
     {
-        stage('ContinuousDownload')
+        stage('ContDownload_Master')
         {
             steps
             {
-                git 'https://github.com/krishnain/maven111.git'
+                script
+                {
+                    cicd.newGit("https://github.com/krishnain/maven111.git")
+                }
             }
         }
-        stage('ContinuousBuild')
+        stage('ContBuild_Master')
         {
             steps
             {
-                sh 'mvn package'
+                script
+                {
+                    cicd.newBuild()
+                }
             }
         }
-        stage('ContinuousDeployment')
+        stage('ContDeploy_Master')
         {
             steps
             {
-                deploy adapters: [tomcat9(credentialsId: '709852eb-f517-4ba1-815b-05a5b7dbe495', path: '', url: 'http://172.31.17.189:8080')], contextPath: 'test1', war: '**/*.war'
+                script
+                {
+                    cicd.newDeploy("http://172.31.17.189:8080","testapp")
+                }
             }
         }
-        stage('ContinuousTesting')
+        stage('ContTesting_Master')
         {
             steps
             {
-                git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-                sh 'java -jar /home/ubuntu/.jenkins/workspace/DeclarativePipeline1/testing.jar'
+                script
+                {
+                    cicd.newGit("https://github.com/intelliqittrainings/FunctionalTesting.git")
+                    cicd.newTest("Pipelinewithlibraries")
+                    
+                }
             }
+            
         }
-        stage('ContinuousDelivery')
+        stage('ContDelivery_Master')
         {
             steps
             {
-                deploy adapters: [tomcat9(credentialsId: '709852eb-f517-4ba1-815b-05a5b7dbe495', path: '', url: 'http://172.31.22.149:8080')], contextPath: 'prod1', war: '**/*.war'
+                script
+                {
+                    cicd.newDeploy("http://172.31.22.149:8080","prodapp")
+                }
             }
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
